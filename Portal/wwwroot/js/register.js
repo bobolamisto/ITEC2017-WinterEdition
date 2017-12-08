@@ -7,6 +7,7 @@
 });
 
 function showPosition(position) {
-    console.log(position.coords.latitude +
-        "<br>Longitude: " + position.coords.longitude);
+    $("#register-latitude-input").val(position.coords.latitude);
+    $("#register-longitude-input").val(position.coords.longitude);
+    console.log(position.coords.longitude);
 }

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Portal.Models;
 using Portal.Models.AccountViewModels;
 using Portal.Services;
+using Portal.Data;
 
 namespace Portal.Controllers
 {
@@ -24,17 +25,20 @@ namespace Portal.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
+        private readonly PortalDbContext _context;
 
         public AccountController(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailSender emailSender,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+            PortalDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
+            _context = context;
         }
 
         [TempData]
@@ -220,7 +224,14 @@ namespace Portal.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, Age = model.Age, RadiusOfInterest = model.RadiusOfInterest, Status = UserStatus.Pending, Gender = model.Gender };
+                var location = _context.Locations.FirstOrDefault(l => l.Latitude == model.Location.Latitude && l.Longitude == model.Location.Longitude);
+                if (location == null)
+                {
+                    _context.Locations.Add(new Location { Latitude = model.Location.Latitude, Longitude = model.Location.Longitude });
+                    _context.SaveChanges();
+                    location = _context.Locations.FirstOrDefault(l => l.Latitude == model.Location.Latitude && l.Longitude == model.Location.Longitude);
+                }
+                var user = new User { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, Age = model.Age, RadiusOfInterest = model.RadiusOfInterest, Status = UserStatus.Pending, Gender = model.Gender, LocationId = location.Id };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
