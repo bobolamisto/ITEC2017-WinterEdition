@@ -35,7 +35,7 @@ namespace Portal.Models.AccountViewModels
         public string LastName { get; set; }
 
         [Required]
-        [Display(Name = "Radius of interest")]
+        [Display(Name = "Radius of interest (km)")]
         public double RadiusOfInterest { get; set; }
 
         [Required]
