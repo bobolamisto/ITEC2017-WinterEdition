@@ -8,14 +8,14 @@ namespace Portal.Models
 {
     public enum Gender
     {
-        Female,
+        Female = 0,
         Male,
         Other
     }
 
     public enum UserStatus
     {
-        Pending,
+        Pending = 0,
         Accepted,
         Rejected
     }

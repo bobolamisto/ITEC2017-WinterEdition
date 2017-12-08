@@ -23,5 +23,29 @@ namespace Portal.Models.AccountViewModels
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Required]
+        [Display(Name = "First name")]
+        public string FirstName { get; set; }
+        
+        //[Display(Name = "Location")]
+        //public Location Location { get; set; }
+        [Required]
+        [Display(Name = " Last name")]
+        public string LastName { get; set; }
+
+        [Required]
+        [Display(Name = "Radius of interest")]
+        public double RadiusOfInterest { get; set; }
+
+        [Required]
+        [Display(Name = "Gender")]
+        public Gender Gender { get; set; }
+
+        [Required]
+        [Display(Name = "Age")]
+        [Range(14,150)]
+        public int Age { get; set; }
+
     }
 }
