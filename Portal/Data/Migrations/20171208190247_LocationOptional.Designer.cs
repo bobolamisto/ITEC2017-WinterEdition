@@ -12,9 +12,10 @@ using System;
 namespace Portal.Data.Migrations
 {
     [DbContext(typeof(PortalDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171208190247_LocationOptional")]
+    partial class LocationOptional
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
