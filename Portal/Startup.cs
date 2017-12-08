@@ -30,7 +30,7 @@ namespace Portal
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<User, IdentityRole>()
-                .AddEntityFrameworkStores<DbContext>()
+                .AddEntityFrameworkStores<PortalDbContext>()
                 .AddDefaultTokenProviders();
 
             // Add application services.

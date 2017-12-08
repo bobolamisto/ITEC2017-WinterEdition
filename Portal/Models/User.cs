@@ -31,7 +31,8 @@ namespace Portal.Models
                 return FirstName + " " + LastName;
             }
         }
-        public int LocationId { get; set; }
+        //to do: remove optional
+        public int? LocationId { get; set; }
         public virtual Location Location { get; set; }
         public double RadiusOfInterest { get; set; }
         public int Age { get; set; }
