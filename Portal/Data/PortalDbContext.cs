@@ -8,12 +8,18 @@ using Portal.Models;
 
 namespace Portal.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class PortalDbContext : IdentityDbContext<User>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public PortalDbContext(DbContextOptions<PortalDbContext> options)
             : base(options)
         {
         }
+
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Issue> Issues { get; set; }
+        public DbSet<IssueState> IssueState { get; set; }
+        public DbSet<Location> Locations { get; set; }
+        public DbSet<User_Issue> UserIssues { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
