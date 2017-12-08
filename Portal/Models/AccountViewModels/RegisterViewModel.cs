@@ -46,6 +46,10 @@ namespace Portal.Models.AccountViewModels
         [Display(Name = "Age")]
         [Range(14,150)]
         public int Age { get; set; }
+        
+        [Required]
+        [Display(Name = "Location")]
+        public Location Location { get; set; }
 
     }
 }
