@@ -16,9 +16,26 @@ namespace Portal.Models.ManageViewModels
         [EmailAddress]
         public string Email { get; set; }
 
-        [Phone]
-        [Display(Name = "Phone number")]
-        public string PhoneNumber { get; set; }
+        [Required]
+        [Display(Name = "First name")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [Display(Name = " Last name")]
+        public string LastName { get; set; }
+
+        [Required]
+        [Display(Name = "Radius of interest (km)")]
+        public double RadiusOfInterest { get; set; }
+
+        [Required]
+        [Display(Name = "Gender")]
+        public Gender Gender { get; set; }
+
+        [Required]
+        [Display(Name = "Age")]
+        [Range(14, 150)]
+        public int Age { get; set; }
 
         public string StatusMessage { get; set; }
     }
