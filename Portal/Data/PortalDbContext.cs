@@ -20,6 +20,7 @@ namespace Portal.Data
         public DbSet<IssueState> IssueState { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<User_Issue> UserIssues { get; set; }
+        public DbSet<Image> Images { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -6,7 +6,6 @@
     } else {
         console.log("Geolocation is not supported by this browser.");
     }
-
 });
 
 function showPosition(position) {

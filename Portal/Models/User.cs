@@ -40,14 +40,14 @@ namespace Portal.Models
         public UserStatus Status { get; set; }
         public bool IsAdmin { get; set; }
         public virtual List<User_Issue> User_Issues { get; set; }
-
+        public virtual List<Image> Images { get; set; }
+        //public byte[] ProfilePicture { get; set; }
         public User()
         {
             User_Issues = new List<User_Issue>();
         }
 
 
-        //to do: add pictures
 
     }
 }

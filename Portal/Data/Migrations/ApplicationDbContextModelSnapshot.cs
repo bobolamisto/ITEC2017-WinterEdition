@@ -147,6 +147,36 @@ namespace Portal.Data.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("Portal.Models.Image", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ContentType");
+
+                    b.Property<byte[]>("Data");
+
+                    b.Property<int>("Height");
+
+                    b.Property<int?>("IssueId");
+
+                    b.Property<int>("Length");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("UserId");
+
+                    b.Property<int>("Width");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IssueId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Images");
+                });
+
             modelBuilder.Entity("Portal.Models.Issue", b =>
                 {
                     b.Property<int>("Id")
@@ -275,9 +305,7 @@ namespace Portal.Data.Migrations
 
                     b.Property<int>("IssueId");
 
-                    b.Property<int>("UserId");
-
-                    b.Property<string>("UserId1");
+                    b.Property<string>("UserId");
 
                     b.Property<int>("Vote");
 
@@ -285,7 +313,7 @@ namespace Portal.Data.Migrations
 
                     b.HasIndex("IssueId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserIssues");
                 });
@@ -342,6 +370,17 @@ namespace Portal.Data.Migrations
                         .HasForeignKey("User_IssueId");
                 });
 
+            modelBuilder.Entity("Portal.Models.Image", b =>
+                {
+                    b.HasOne("Portal.Models.Issue", "Issue")
+                        .WithMany("Images")
+                        .HasForeignKey("IssueId");
+
+                    b.HasOne("Portal.Models.User", "User")
+                        .WithMany("Images")
+                        .HasForeignKey("UserId");
+                });
+
             modelBuilder.Entity("Portal.Models.Issue", b =>
                 {
                     b.HasOne("Portal.Models.Location", "Location")
@@ -373,7 +412,7 @@ namespace Portal.Data.Migrations
 
                     b.HasOne("Portal.Models.User", "User")
                         .WithMany("User_Issues")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }
