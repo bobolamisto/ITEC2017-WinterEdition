@@ -1,0 +1,14 @@
+﻿@model IList<int>
+@{
+    ViewData["Title"] = "Images Page";
+}
+
+<form action="/Images/UploadImage" enctype="multipart/form-data" method="post">
+    <input type="file" name="files" />
+    <button>post</button>
+</form>
+
+@foreach (var item in Model)
+    {
+    <img src="/Images/ViewImage/@item" />
+    }    

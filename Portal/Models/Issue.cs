@@ -14,14 +14,13 @@ namespace Portal.Models
         public string Description { get; set; }
         public virtual List<IssueState> States { get; set; }
         public virtual List<User_Issue> User_Issues { get; set; }
-
+        public virtual List<Image> Images { get; set; }
         public Issue()
         {
             User_Issues = new List<User_Issue>();
             States = new List<IssueState>();
 
         }
-        //to do: pictures
 
 
     }

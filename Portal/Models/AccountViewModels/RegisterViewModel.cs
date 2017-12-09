@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -50,6 +51,8 @@ namespace Portal.Models.AccountViewModels
         [Required]
         [Display(Name = "Location")]
         public Location Location { get; set; }
+
+        public virtual List<IFormFile> Image { get; set; }
 
     }
 }
