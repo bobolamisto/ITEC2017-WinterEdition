@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Portal.Data;
 using Portal.Models;
+using System.Security.Claims;
 
 namespace Portal.Controllers
 {
@@ -22,20 +23,49 @@ namespace Portal.Controllers
         // GET: Issues
         public async Task<IActionResult> Index()
         {
+
             var issues = _context.Issues.Include(i => i.Location)
-                                                 .Include(i => i.States);
+                                        .Include(i => i.States);
             List<Issue> list = new List<Issue>();
-            foreach(var issue in issues)
+            foreach (var issue in issues)
             {
                 var lastState = issue.States.FirstOrDefault();
-                foreach(var state in issue.States)
+                foreach (var state in issue.States)
                 {
-                    if(state.Date > lastState.Date)
+                    if (state.Date > lastState.Date)
                     {
                         lastState = state;
                     }
                 }
-                if(lastState.Type == StateType.Active)
+                if (lastState.Type == StateType.Active)
+                {
+                    list.Add(issue);
+                }
+            }
+            return View(list);
+        }
+
+        public async Task<IActionResult> MyIssues()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var issues = _context.Issues.Include(i => i.Location)
+                                        .Include(i => i.States)
+                                        .Include(i => i.User_Issues);
+                                        
+            List<Issue> list = new List<Issue>();
+            foreach (var issue in issues)
+            {
+                
+                var lastState = issue.States.FirstOrDefault();
+                foreach (var state in issue.States)
+                {
+                    if (state.Date > lastState.Date)
+                    {
+                        lastState = state;
+                    }
+                }
+                bool isMyIssue = issue.User_Issues.FirstOrDefault(mi => mi.IsAuthor == true && mi.IssueId == lastState.IssueId && mi.UserId == userId) != null;
+                if (lastState.Type == StateType.Active && isMyIssue)
                 {
                     list.Add(issue);
                 }
@@ -92,6 +122,11 @@ namespace Portal.Controllers
 
                 var issueState = new IssueState { Date = System.DateTime.Now, IssueId = addedIssue.Id, Type = StateType.Active };
                 _context.Add(issueState);
+
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var user_issues = new User_Issue { IsAuthor = true, UserId = userId, IssueId = addedIssue.Id, Vote = VoteType.None };
+
+                _context.Add(user_issues);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -132,6 +167,13 @@ namespace Portal.Controllers
             {
                 try
                 {
+                    var location = _context.Locations.FirstOrDefault(l => l.Latitude == issue.Location.Latitude && l.Longitude == issue.Location.Longitude);
+                    if(location == null)
+                    {
+                        _context.Add(new Location { Latitude = issue.Location.Latitude, Longitude = issue.Location.Longitude });
+                        _context.SaveChanges();
+                    }
+                    issue.LocationId = _context.Locations.FirstOrDefault(l => l.Latitude == issue.Location.Latitude && l.Longitude == issue.Location.Longitude).Id;
                     _context.Update(issue);
                     await _context.SaveChangesAsync();
                 }
@@ -151,7 +193,50 @@ namespace Portal.Controllers
             ViewData["LocationId"] = new SelectList(_context.Locations, "Id", "Id", issue.LocationId);
             return View(issue);
         }
+        public async Task<IActionResult> UpVote(int id)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var issue_user = _context.UserIssues.FirstOrDefault(iu => iu.User.Id == userId && iu.IssueId == id);
+            if (issue_user == null)
+            {
+                _context.Add(new User_Issue { UserId = userId, IsAuthor = false, Vote = VoteType.Upvote, IssueId = (int)id });
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("Index");
+        }
 
+        public async Task<IActionResult> DownVote(int id)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var issue_user = _context.UserIssues.FirstOrDefault(iu => iu.User.Id == userId && iu.IssueId == id);
+            var issue_users = _context.UserIssues;
+
+            if (issue_user == null)
+            {
+                _context.Add(new User_Issue { UserId = userId, IsAuthor = false, Vote = VoteType.Downvote, IssueId = (int)id });
+                await _context.SaveChangesAsync();
+                var upVotes = issue_users.Count(iu => iu.Vote == VoteType.Upvote && iu.IssueId == id);
+                var downVotes = issue_users.Count(iu => iu.Vote == VoteType.Downvote && iu.IssueId == id);
+                if (upVotes != 0 && downVotes != 0)
+                {
+                    if (downVotes > upVotes * 2)
+                        return RedirectToAction("ArchiveIssueAsync", new { id = id });
+                }
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> ArchiveIssueAsync(int id)
+        {
+            var issues = _context.Issues.Include(i => i.Location)
+                .Include(i => i.States)
+                .FirstOrDefault(i => i.Id == id);
+            issues.States.Add(new IssueState { IssueId = issues.Id, Date = System.DateTime.Now, Type = StateType.Archived });
+            _context.Update(issues);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
         // GET: Issues/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {

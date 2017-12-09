@@ -1,13 +1,8 @@
 ﻿@model IEnumerable<Portal.Models.Issue>
+
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "ArchivedIssue";
 }
-
-<h2>Index</h2>
-<p>
-    <a asp-action="Create">Add a new issue</a>
-</p>
-
 <table class="table">
     <thead>
         <tr>
@@ -37,12 +32,7 @@
                     @Html.DisplayFor(modelItem => item.Location.Id)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" hidden>Edit</a> 
-                    <a asp-action="Details" asp-route-id="@item.Id" hidden>Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" hidden>Delete</a>
-                    <a asp-action="UpVote" asp-route-id="@item.Id">Up vote</a> |
-                    <a asp-action="DownVote" asp-route-id="@item.Id">Down vote</a>
-
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
             </tr>
         }
