@@ -33,3 +33,8 @@
         display: none;
     }
 }
+
+.menu-item-active {
+    background-color: #337ab7;
+    color : #fff;
+}
