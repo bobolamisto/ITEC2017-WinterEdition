@@ -8,16 +8,20 @@ using Microsoft.EntityFrameworkCore;
 using Portal.Data;
 using Portal.Models;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace Portal.Controllers
 {
     public class IssuesController : Controller
     {
         private readonly PortalDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public IssuesController(PortalDbContext context)
+
+        public IssuesController(PortalDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Issues
@@ -25,7 +29,12 @@ namespace Portal.Controllers
         {
 
             var issues = _context.Issues.Include(i => i.Location)
-                                        .Include(i => i.States);
+                                        .Include(i => i.States)
+                                        .Include(i => i.Images);
+            var userId = _userManager.GetUserAsync(User).Result.Id;
+            var user = _context.Users.Include(u => u.Location).FirstOrDefault(u => u.Id == userId);
+            ViewData["LoggedUser"] = user;
+
             List<Issue> list = new List<Issue>();
             foreach (var issue in issues)
             {
@@ -39,6 +48,17 @@ namespace Portal.Controllers
                 }
                 if (lastState.Type == StateType.Active)
                 {
+                    //list.Add(new IssueViewModel
+                    //{
+                    //    Id = issue.Id,
+                    //    Description = issue.Description,
+                    //    Images = issue.Images,
+                    //    LocationId = issue.LocationId,
+                    //    Location = issue.Location,
+                    //    Title = issue.Title,
+                    //    LoggedUser = user
+                    //});
+                    issue.States = null;
                     list.Add(issue);
                 }
             }
@@ -51,11 +71,11 @@ namespace Portal.Controllers
             var issues = _context.Issues.Include(i => i.Location)
                                         .Include(i => i.States)
                                         .Include(i => i.User_Issues);
-                                        
+
             List<Issue> list = new List<Issue>();
             foreach (var issue in issues)
             {
-                
+
                 var lastState = issue.States.FirstOrDefault();
                 foreach (var state in issue.States)
                 {
@@ -169,7 +189,7 @@ namespace Portal.Controllers
                 try
                 {
                     var location = _context.Locations.FirstOrDefault(l => l.Latitude == issue.Location.Latitude && l.Longitude == issue.Location.Longitude);
-                    if(location == null)
+                    if (location == null)
                     {
                         _context.Add(new Location { Latitude = issue.Location.Latitude, Longitude = issue.Location.Longitude });
                         _context.SaveChanges();

@@ -2,49 +2,62 @@
 @{
     ViewData["Title"] = "Index";
 }
-
+<script>
+        @{ var u = ViewData["LoggedUser"] as Portal.Models.User; }
+        window.centerlat = @u.Location.Latitude;
+        window.centerlong = @u.Location.Longitude;
+        window.issues = @Html.Raw(Json.Serialize(@Model));
+</script>
 <h2>Index</h2>
 <p>
     <a asp-action="Create">Add a new issue</a>
 </p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th hidden>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th hidden>
-                @Html.DisplayNameFor(model => model.Location)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+<div id="all-issues-map" style="height:500px"></div>
+@*<table class="table">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td hidden>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td hidden>
-                    @Html.DisplayFor(modelItem => item.Location.Id)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" hidden>Edit</a> 
-                    <a asp-action="Details" asp-route-id="@item.Id" hidden>Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" hidden>Delete</a>
-                    <a asp-action="UpVote" asp-route-id="@item.Id">Up vote</a> |
-                    <a asp-action="DownVote" asp-route-id="@item.Id">Down vote</a>
-
-                </td>
+                <th>
+                    @Html.DisplayNameFor(model => model.Title)
+                </th>
+                <th hidden>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+                <th hidden>
+                    @Html.DisplayNameFor(model => model.Location)
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td hidden>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td hidden>
+                        @Html.DisplayFor(modelItem => item.Location.Id)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" hidden>Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" hidden>Details</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" hidden>Delete</a>
+                        <a asp-action="UpVote" asp-route-id="@item.Id">Up vote</a> |
+                        <a asp-action="DownVote" asp-route-id="@item.Id">Down vote</a>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>*@
+
+@section Scripts{
+    <script type="text/javascript" src="~/js/allIissues.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfEImrPrDRb-12UFkgRegFVSKekIAJmh8&callback=initMap">
+    </script>
+
+}
