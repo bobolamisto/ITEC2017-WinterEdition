@@ -32,6 +32,85 @@ namespace Portal.Controllers
             return View(await portalDbContext.ToListAsync());
         }
 
+        public async Task<IActionResult> ArchiveIssueAsync(int id)
+        {
+            var issues = _context.Issues.Include(i => i.Location)
+                .Include(i => i.States)
+                .FirstOrDefault(i => i.Id == id);
+            issues.States.Add(new IssueState { IssueId = issues.Id, Date = System.DateTime.Now, Type = StateType.Archived });
+            _context.Update(issues);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("ActiveIssue");
+        }
+        public IActionResult ActiveIssue()
+        {
+            var issues = _context.Issues.Include(i => i.Location)
+                                                 .Include(i => i.States);
+            List<Issue> list = new List<Issue>();
+            foreach (var issue in issues)
+            {
+                var lastState = issue.States.FirstOrDefault();
+                foreach (var state in issue.States)
+                {
+                    if (state.Date > lastState.Date)
+                    {
+                        lastState = state;
+                    }
+                }
+                if (lastState.Type == StateType.Active)
+                {
+                    list.Add(issue);
+                }
+            }
+            return View(list);
+        }
+
+        public IActionResult ArchivedIssue()
+        {
+            var issues = _context.Issues.Include(i => i.Location)
+                                                 .Include(i => i.States);
+            List<Issue> list = new List<Issue>();
+            foreach (var issue in issues)
+            {
+                var lastState = issue.States.FirstOrDefault();
+                foreach (var state in issue.States)
+                {
+                    if (state.Date > lastState.Date)
+                    {
+                        lastState = state;
+                    }
+                }
+                if (lastState.Type == StateType.Archived)
+                {
+                    list.Add(issue);
+                }
+            }
+            return View(list);
+        }
+
+        public IActionResult SolvedIssue()
+        {
+            var issues = _context.Issues.Include(i => i.Location)
+                                                 .Include(i => i.States);
+            List<Issue> list = new List<Issue>();
+            foreach (var issue in issues)
+            {
+                var lastState = issue.States.FirstOrDefault();
+                foreach (var state in issue.States)
+                {
+                    if (state.Date > lastState.Date)
+                    {
+                        lastState = state;
+                    }
+                }
+                if (lastState.Type == StateType.Solved)
+                {
+                    list.Add(issue);
+                }
+            }
+            return View(list);
+        }
+
         // GET: Users/Details/5
         public async Task<IActionResult> Details(string id)
         {
