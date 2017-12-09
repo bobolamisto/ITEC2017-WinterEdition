@@ -42,7 +42,7 @@ namespace Portal.Models.ManageViewModels
         
         public int ProfilePictureId { get; set; }
 
-        [Display(Name = "Profile Picture")]
+        [Display(Name = "Choose Profile Picture")]
         public List<IFormFile> Image { get; set; }
 
         public IndexViewModel()

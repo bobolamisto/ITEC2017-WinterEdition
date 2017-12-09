@@ -73,7 +73,7 @@ namespace Portal.Controllers
                 Gender = user.Gender,
                 RadiusOfInterest = user.RadiusOfInterest,
                 StatusMessage = StatusMessage,
-                ProfilePictureId = image.Id
+                ProfilePictureId = image != null ? image.Id : 0
             };
 
             return View(model);
@@ -101,7 +101,18 @@ namespace Portal.Controllers
             if(model.Image.Count > 0)
             {
                 var image = _context.Images.FirstOrDefault(i => i.UserId == user.Id);
-                new ImagesService(_context).UpdateProfilePicture(model.Image, image);
+                if (image != null)
+                {
+                    new ImagesService(_context).UpdateProfilePicture(model.Image, image);
+                }
+                else
+                {
+                    var idImage = new ImagesService(_context).UploadImage(model.Image);
+                    image = _context.Images.Find(idImage);
+                    image.UserId = user.Id;
+                    _context.Images.Update(image);
+                    _context.SaveChanges();
+                }
             }
 
             StatusMessage = "Your profile has been updated";
