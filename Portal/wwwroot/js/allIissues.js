@@ -21,7 +21,7 @@ function initMap() {
     var me = new google.maps.Marker({
         position: loc,
         map: window.map,
-        //title: 'your location',
+        title: 'ME',
         animation: google.maps.Animation.BOUNCE,
     });
 
