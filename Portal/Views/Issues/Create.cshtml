@@ -12,7 +12,7 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="LocationId" class="control-label"></label>
                 <select asp-for="LocationId" class ="form-control" asp-items="ViewBag.LocationId"></select>
             </div>
@@ -26,10 +26,24 @@
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+            <div class="form-group" hidden>
+                <label asp-for="Location.Latitude"></label>
+                <input asp-for="Location.Latitude" class="form-control" id="register-latitude-input" />
+                <span asp-validation-for="Location.Latitude" class="text-danger"></span>
+            </div>
+            <div class="form-group" hidden>
+                <label asp-for="Location.Longitude"></label>
+                <input asp-for="Location.Longitude" class="form-control" id="register-longitude-input" />
+                <span asp-validation-for="Location.Longitude" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />
             </div>
         </form>
+    </div>
+    <div class="col-md-6" style="height:500px" id="map-renderer">
+        <div id="map"></div>
+
     </div>
 </div>
 
@@ -38,5 +52,12 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/issue.js" asp-append-version="true"></script>
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfEImrPrDRb-12UFkgRegFVSKekIAJmh8&callback=initMap">
+    </script>
+
 }
+
+

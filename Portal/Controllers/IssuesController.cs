@@ -22,8 +22,25 @@ namespace Portal.Controllers
         // GET: Issues
         public async Task<IActionResult> Index()
         {
-            var portalDbContext = _context.Issues.Include(i => i.Location);
-            return View(await portalDbContext.ToListAsync());
+            var issues = _context.Issues.Include(i => i.Location)
+                                                 .Include(i => i.States);
+            List<Issue> list = new List<Issue>();
+            foreach(var issue in issues)
+            {
+                var lastState = issue.States.FirstOrDefault();
+                foreach(var state in issue.States)
+                {
+                    if(state.Date > lastState.Date)
+                    {
+                        lastState = state;
+                    }
+                }
+                if(lastState.Type == StateType.Active)
+                {
+                    list.Add(issue);
+                }
+            }
+            return View(list);
         }
 
         // GET: Issues/Details/5
@@ -57,11 +74,24 @@ namespace Portal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,LocationId,Title,Description")] Issue issue)
+        public async Task<IActionResult> Create([Bind("Id,LocationId,Title,Description,Location")] Issue issue)
         {
             if (ModelState.IsValid)
             {
+                var location = _context.Locations.FirstOrDefault(l => l.Latitude == issue.Location.Latitude && l.Longitude == issue.Location.Longitude);
+                if (location == null)
+                {
+                    _context.Locations.Add(new Location { Latitude = issue.Location.Latitude, Longitude = issue.Location.Longitude });
+                    _context.SaveChanges();
+                    location = _context.Locations.FirstOrDefault(l => l.Latitude == issue.Location.Latitude && l.Longitude == issue.Location.Longitude);
+                }
+                issue.LocationId = location.Id;
                 _context.Add(issue);
+                _context.SaveChanges();
+                var addedIssue = _context.Issues.FirstOrDefault(i => i.Title == issue.Title && i.Description == issue.Description && i.LocationId == issue.LocationId);
+
+                var issueState = new IssueState { Date = System.DateTime.Now, IssueId = addedIssue.Id, Type = StateType.Active };
+                _context.Add(issueState);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -91,7 +121,7 @@ namespace Portal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,LocationId,Title,Description")] Issue issue)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,LocationId,Title,Description,Location")] Issue issue)
         {
             if (id != issue.Id)
             {
