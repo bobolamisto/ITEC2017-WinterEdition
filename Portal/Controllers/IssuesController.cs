@@ -95,7 +95,6 @@ namespace Portal.Controllers
         // GET: Issues/Create
         public IActionResult Create()
         {
-            ViewData["LocationId"] = new SelectList(_context.Locations, "Id", "Id");
             return View();
         }
 
@@ -104,7 +103,7 @@ namespace Portal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,LocationId,Title,Description,Location")] Issue issue)
+        public async Task<IActionResult> Create([Bind("Title,Description,Location")] Issue issue)
         {
             if (ModelState.IsValid)
             {
@@ -118,19 +117,21 @@ namespace Portal.Controllers
                 issue.LocationId = location.Id;
                 _context.Add(issue);
                 _context.SaveChanges();
+
                 var addedIssue = _context.Issues.FirstOrDefault(i => i.Title == issue.Title && i.Description == issue.Description && i.LocationId == issue.LocationId);
 
                 var issueState = new IssueState { Date = System.DateTime.Now, IssueId = addedIssue.Id, Type = StateType.Active };
                 _context.Add(issueState);
+                _context.SaveChanges();
 
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 var user_issues = new User_Issue { IsAuthor = true, UserId = userId, IssueId = addedIssue.Id, Vote = VoteType.None };
 
                 _context.Add(user_issues);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["LocationId"] = new SelectList(_context.Locations, "Id", "Id", issue.LocationId);
             return View(issue);
         }
 

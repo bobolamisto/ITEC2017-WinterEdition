@@ -43,8 +43,8 @@
             </div>
         </form>
     </div>
-    <div class="col-md-6" style="height:500px" id="map-renderer">
-        <div id="map"></div>
+    <div class="col-md-6" >
+        <div id="issue-edit-map" style="height:500px"></div>
 
     </div>
 </div>
@@ -54,11 +54,12 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/issue.js" asp-append-version="true"></script>
     @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script src="~/js/issueEdit.js" asp-append-version="true"></script>
     <script async defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfEImrPrDRb-12UFkgRegFVSKekIAJmh8&callback=initMap">
     </script>
+
 
 }
 
