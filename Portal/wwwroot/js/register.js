@@ -32,5 +32,13 @@ function initMap() {
         title: 'Your location',
         animation: google.maps.Animation.DROP,
     });
-    
+
+    google.maps.event.addListener(map, 'click', function (event) {
+        marker.setMap(null);
+        marker = new google.maps.Marker({ position: event.latLng, map: map });
+        //map.setCenter(marker.getPosition());
+        $("#register-latitude-input").val(marker.position.lat);
+        $("#register-longitude-input").val(marker.position.lng);
+    });
+
 }
