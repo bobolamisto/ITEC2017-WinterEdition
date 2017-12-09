@@ -16,6 +16,8 @@ namespace Portal.Models
         public int Id { get; set; }
         public DateTime Date { get; set; }
         public StateType Type { get; set; }
+        public int IssueId { get; set; }
+        public virtual Issue Issue { get; set; }
         public IssueState()
         {
 
