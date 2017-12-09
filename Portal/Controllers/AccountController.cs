@@ -67,9 +67,9 @@ namespace Portal.Controllers
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                
+
                 var user = _userManager.Users.FirstOrDefault(u => u.Email == model.Email);
-                if ((int) user.Status == (int) UserStatus.Accepted)
+                if ((int)user.Status == (int)UserStatus.Accepted)
                 {
                     var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                     if (result.Succeeded)
@@ -244,17 +244,19 @@ namespace Portal.Controllers
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    var idImage = new ImagesService(_context).UploadImage(model.Image);
-                    var image = _context.Images.Find(idImage);
-                    image.UserId = user.Id;
-                    _context.Images.Update(image);
-                    _context.SaveChanges();
-
+                    if (model.Image != null)
+                    {
+                        var idImage = new ImagesService(_context).UploadImage(model.Image);
+                        var image = _context.Images.Find(idImage);
+                        image.UserId = user.Id;
+                        _context.Images.Update(image);
+                        _context.SaveChanges();
+                    }
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
                     await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
 
-                   // await _signInManager.SignInAsync(user, isPersistent: false);
+                    // await _signInManager.SignInAsync(user, isPersistent: false);
                     _logger.LogInformation("User created a new account with password.");
                     return RedirectToLocal(returnUrl);
                 }

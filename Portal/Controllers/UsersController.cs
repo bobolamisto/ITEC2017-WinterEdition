@@ -32,6 +32,13 @@ namespace Portal.Controllers
             return View(await portalDbContext.ToListAsync());
         }
 
+        public async Task<IActionResult> Statistics()
+        {
+            return View();
+        }
+
+
+
         public async Task<IActionResult> ArchiveIssueAsync(int id)
         {
             var issues = _context.Issues.Include(i => i.Location)
