@@ -42,6 +42,17 @@ namespace Portal.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("ActiveIssue");
         }
+
+        public async Task<IActionResult> SolveIssueAsync(int id)
+        {
+            var issues = _context.Issues.Include(i => i.Location)
+                .Include(i => i.States)
+                .FirstOrDefault(i => i.Id == id);
+            issues.States.Add(new IssueState { IssueId = issues.Id, Date = System.DateTime.Now, Type = StateType.Solved });
+            _context.Update(issues);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("ActiveIssue");
+        }
         public IActionResult ActiveIssue()
         {
             var issues = _context.Issues.Include(i => i.Location)
