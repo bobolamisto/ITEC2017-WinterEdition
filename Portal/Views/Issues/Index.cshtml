@@ -5,7 +5,8 @@
 <script>
         @{ var u = ViewData["LoggedUser"] as Portal.Models.User; }
         window.centerlat = @u.Location.Latitude;
-        window.centerlong = @u.Location.Longitude;
+    window.centerlong = @u.Location.Longitude;
+    window.myradius = @u.RadiusOfInterest;
         window.issues = @Html.Raw(Json.Serialize(@Model));
 </script>
 <h2>Index</h2>
