@@ -73,7 +73,7 @@ namespace Portal.Controllers
                 Gender = user.Gender,
                 RadiusOfInterest = user.RadiusOfInterest,
                 StatusMessage = StatusMessage,
-                ProfilePictureId = image.Id
+                //ProfilePictureId = (int) image?.Id
             };
 
             return View(model);
