@@ -107,13 +107,14 @@ namespace Portal.Controllers
 
             var issue = await _context.Issues
                 .Include(i => i.Location)
+                .Include(i=>i.Images)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (issue == null)
             {
                 return NotFound();
             }
 
-            return View(issue);
+            return PartialView(issue);
         }
 
         // GET: Issues/Create

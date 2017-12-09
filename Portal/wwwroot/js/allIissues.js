@@ -14,7 +14,7 @@ function showPosition(position) {
 function initMap() {
     var loc = { lat: window.centerlat, lng: window.centerlong };
     window.map = new google.maps.Map(document.getElementById('all-issues-map'), {
-        zoom: 9,
+        zoom: 8,
         center: loc
     });
 
@@ -36,10 +36,16 @@ function initMap() {
         var marker = new google.maps.Marker({
             position: { lat: window.issues[i].location.latitude, lng: window.issues[i].location.longitude },
             map: window.map,
-            //title: 'your location',
+            title: window.issues[i].title,
             //animation: google.maps.animation.drop,
+            issueID: window.issues[i].id,
         });
-        
+        google.maps.event.addListener(marker, 'click', function () {
+            var div = $("#issue-marker-details");
+            div.empty();
+            div.load("/Issues/Details/" + this.issueID);
+
+        });
     }
 
 }
