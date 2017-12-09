@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,6 +17,8 @@ namespace Portal.Models
         public virtual List<IssueState> States { get; set; }
         public virtual List<User_Issue> User_Issues { get; set; }
         public virtual List<Image> Images { get; set; }
+        [NotMapped]
+        public List<IFormFile> UploadedFiles { get; set; }
         public Issue()
         {
             User_Issues = new List<User_Issue>();

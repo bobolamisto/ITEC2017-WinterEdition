@@ -9,6 +9,8 @@ using Portal.Data;
 using Portal.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using Portal.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace Portal.Controllers
 {
@@ -59,6 +61,8 @@ namespace Portal.Controllers
                     //    LoggedUser = user
                     //});
                     issue.States = null;
+                    issue.Images = null;
+                    issue.User_Issues = null;
                     list.Add(issue);
                 }
             }
@@ -123,7 +127,7 @@ namespace Portal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Description,Location")] Issue issue)
+        public async Task<IActionResult> Create([Bind("Title,Description,Location, UploadedFiles")] Issue issue)
         {
             if (ModelState.IsValid)
             {
@@ -149,6 +153,18 @@ namespace Portal.Controllers
 
                 _context.Add(user_issues);
                 _context.SaveChanges();
+
+                if (issue.UploadedFiles != null)
+                {
+                    foreach (var file in issue.UploadedFiles)
+                    {
+                        var idImage = new ImagesService(_context).UploadImage(new List<IFormFile>() { file });
+                        var image = _context.Images.Find(idImage);
+                        image.IssueId = addedIssue.Id;
+                        _context.Images.Update(image);
+                        _context.SaveChanges();
+                    }
+                }
 
                 return RedirectToAction(nameof(Index));
             }
