@@ -51,12 +51,12 @@
                 <input asp-for="Age" class="form-control" />
                 <span asp-validation-for="Age" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="Location.Latitude"></label>
                 <input asp-for="Location.Latitude" class="form-control" id="register-latitude-input" />
                 <span asp-validation-for="Location.Latitude" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="Location.Longitude"></label>
                 <input asp-for="Location.Longitude" class="form-control" id="register-longitude-input" />
                 <span asp-validation-for="Location.Longitude" class="text-danger"></span>
@@ -64,9 +64,17 @@
             <button type="submit" class="btn btn-default">Register</button>
         </form>
     </div>
+    <div class="col-md-6" style="height:500px" id="map-renderer">
+        <div id="map"></div>
+
+    </div>
 </div>
 
 @section Scripts {
-    @await Html.PartialAsync("_ValidationScriptsPartial")
     <script src="~/js/register.js" asp-append-version="true"></script>
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfEImrPrDRb-12UFkgRegFVSKekIAJmh8&callback=initMap">
+</script>
+
 }
