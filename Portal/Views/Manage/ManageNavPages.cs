@@ -13,6 +13,8 @@ namespace Portal.Views.Manage
 
         public static string Index => "Index";
 
+        public static string IndexAdmin => "IndexAdmin";
+
         public static string ChangePassword => "ChangePassword";
 
         public static string ExternalLogins => "ExternalLogins";
@@ -20,6 +22,8 @@ namespace Portal.Views.Manage
         public static string TwoFactorAuthentication => "TwoFactorAuthentication";
 
         public static string IndexNavClass(ViewContext viewContext) => PageNavClass(viewContext, Index);
+
+        public static string IndexAdminNavClass(ViewContext viewContext) => PageNavClass(viewContext, IndexAdmin);
 
         public static string ChangePasswordNavClass(ViewContext viewContext) => PageNavClass(viewContext, ChangePassword);
 
