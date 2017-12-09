@@ -13,6 +13,9 @@ using Microsoft.Extensions.Options;
 using Portal.Models;
 using Portal.Models.ManageViewModels;
 using Portal.Services;
+using Portal.Data;
+using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.EntityFrameworkCore;
 
 namespace Portal.Controllers
 {
@@ -25,6 +28,7 @@ namespace Portal.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly UrlEncoder _urlEncoder;
+        private readonly PortalDbContext _context;
 
         private const string AuthenicatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
@@ -33,13 +37,15 @@ namespace Portal.Controllers
           SignInManager<User> signInManager,
           IEmailSender emailSender,
           ILogger<ManageController> logger,
-          UrlEncoder urlEncoder)
+          UrlEncoder urlEncoder,
+          PortalDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
             _urlEncoder = urlEncoder;
+            _context = context;
         }
 
         [TempData]
@@ -49,6 +55,8 @@ namespace Portal.Controllers
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
+            var image = _context.Images.FirstOrDefault(i => i.UserId == user.Id);
+            var userImage = _context.Users.Include(u => u.Images).FirstOrDefault(u => u.Id == user.Id)?.Images;
             if (user == null)
             {
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -64,7 +72,8 @@ namespace Portal.Controllers
                 Age = user.Age,
                 Gender = user.Gender,
                 RadiusOfInterest = user.RadiusOfInterest,
-                StatusMessage = StatusMessage
+                StatusMessage = StatusMessage,
+                ProfilePictureId = image.Id
             };
 
             return View(model);
@@ -80,19 +89,19 @@ namespace Portal.Controllers
             }
 
             var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.RadiusOfInterest = model.RadiusOfInterest;
+            user.Gender = model.Gender;
+            user.Age = model.Age;
 
-            var email = user.Email;
-            if (model.Email != email)
+            _context.Users.Update(user);
+            _context.SaveChanges();
+
+            if(model.Image.Count > 0)
             {
-                var setEmailResult = await _userManager.SetEmailAsync(user, model.Email);
-                if (!setEmailResult.Succeeded)
-                {
-                    throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
-                }
+                var image = _context.Images.FirstOrDefault(i => i.UserId == user.Id);
+                new ImagesService(_context).UpdateProfilePicture(model.Image, image);
             }
 
             StatusMessage = "Your profile has been updated";

@@ -69,7 +69,7 @@ namespace Portal.Controllers
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 
                 var user = _userManager.Users.FirstOrDefault(u => u.Email == model.Email);
-                if (user.Status == UserStatus.Accepted)
+                if ((int) user.Status == (int) UserStatus.Accepted)
                 {
                     var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                     if (result.Succeeded)

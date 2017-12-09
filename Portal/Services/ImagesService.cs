@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Portal.Data;
+using Portal.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -52,6 +53,30 @@ namespace Portal.Services
             MemoryStream ms = new MemoryStream(image.Data);
 
             return new FileStreamResult(ms, image.ContentType);
+        }
+
+        public int UpdateProfilePicture(IList<IFormFile> files, Image imageUpdated)
+        {
+            IFormFile uploadedImage = files.FirstOrDefault();
+            if (uploadedImage == null || uploadedImage.ContentType.ToLower().StartsWith("image/"))
+            {
+                MemoryStream ms = new MemoryStream();
+                uploadedImage.OpenReadStream().CopyTo(ms);
+
+                System.Drawing.Image image = System.Drawing.Image.FromStream(ms);
+
+                imageUpdated.Data = ms.ToArray();
+                imageUpdated.Width = image.Width;
+                imageUpdated.Height = image.Height;
+                imageUpdated.ContentType = uploadedImage.ContentType;
+                
+
+                _context.Images.Update(imageUpdated);
+
+                _context.SaveChanges();
+            }
+
+            return imageUpdated.Id;
         }
     }
 }

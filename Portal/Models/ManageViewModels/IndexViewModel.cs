@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -38,5 +39,15 @@ namespace Portal.Models.ManageViewModels
         public int Age { get; set; }
 
         public string StatusMessage { get; set; }
+        
+        public int ProfilePictureId { get; set; }
+
+        [Display(Name = "Profile Picture")]
+        public List<IFormFile> Image { get; set; }
+
+        public IndexViewModel()
+        {
+            Image = new List<IFormFile>();
+        }
     }
 }
