@@ -213,6 +213,7 @@ namespace Portal.Controllers
                     }
                     issue.LocationId = _context.Locations.FirstOrDefault(l => l.Latitude == issue.Location.Latitude && l.Longitude == issue.Location.Longitude).Id;
                     _context.Update(issue);
+                    await _context.SaveChangesAsync();
 
                     if (!String.IsNullOrEmpty(issue.CommentText))
                     {
@@ -221,8 +222,9 @@ namespace Portal.Controllers
                         var comment = new Comment { IssueId = issue.Id, UserId = user.Id, Text = issue.CommentText };
                         _context.Comments.Add(comment);
                         _context.SaveChanges();
+                        return View(issue);
+
                     }
-                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {

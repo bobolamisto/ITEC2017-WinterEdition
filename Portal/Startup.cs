@@ -62,7 +62,7 @@ namespace Portal
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            DbInitializer.Initialize(context);
+            
         }
     }
 }
