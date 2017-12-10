@@ -25,7 +25,7 @@ namespace Portal.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailService _emailSender;
         private readonly ILogger _logger;
         private readonly UrlEncoder _urlEncoder;
         private readonly PortalDbContext _context;
@@ -35,14 +35,13 @@ namespace Portal.Controllers
         public ManageController(
           UserManager<User> userManager,
           SignInManager<User> signInManager,
-          IEmailSender emailSender,
           ILogger<ManageController> logger,
           UrlEncoder urlEncoder,
           PortalDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _emailSender = emailSender;
+            _emailSender = new EmailService();
             _logger = logger;
             _urlEncoder = urlEncoder;
             _context = context;
@@ -137,7 +136,7 @@ namespace Portal.Controllers
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
             var email = user.Email;
-            await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
+            _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
 
             StatusMessage = "Verification email sent. Please check your email.";
             return RedirectToAction(nameof(Index));

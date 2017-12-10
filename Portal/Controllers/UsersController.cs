@@ -7,16 +7,18 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Portal.Data;
 using Portal.Models;
+using Portal.Services;
 
 namespace Portal.Controllers
 {
     public class UsersController : Controller
     {
         private readonly PortalDbContext _context;
-
+        private readonly IEmailService _emailSender;
         public UsersController(PortalDbContext context)
         {
             _context = context;
+            _emailSender = new EmailService();
         }
 
         // GET: Users
@@ -196,17 +198,21 @@ namespace Portal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("FirstName,LastName,LocationId,RadiusOfInterest,Age,Gender,Status,IsAdmin,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user)
         {
-            if (id != user.Id)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(user);
                     await _context.SaveChangesAsync();
+                    if(user.Status == UserStatus.Accepted)
+                    {
+                       _emailSender.SendEmail(user.Email, "Account created", "Your account was accepted by an admin");
+                    }
+                    else if(user.Status == UserStatus.Rejected)
+                    {
+                        _emailSender.SendEmail(user.Email, "Account rejected", "Your account was rejected by an admin");
+
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
