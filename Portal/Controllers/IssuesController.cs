@@ -107,7 +107,7 @@ namespace Portal.Controllers
 
             var issue = await _context.Issues
                 .Include(i => i.Location)
-                .Include(i=>i.Images)
+                .Include(i => i.Images)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (issue == null)
             {
@@ -194,7 +194,7 @@ namespace Portal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,LocationId,Title,Description,Location")] Issue issue)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,LocationId,Title,Description,Location, CommentText")] Issue issue)
         {
             if (id != issue.Id)
             {
@@ -213,6 +213,15 @@ namespace Portal.Controllers
                     }
                     issue.LocationId = _context.Locations.FirstOrDefault(l => l.Latitude == issue.Location.Latitude && l.Longitude == issue.Location.Longitude).Id;
                     _context.Update(issue);
+
+                    if (!String.IsNullOrEmpty(issue.CommentText))
+                    {
+                        var user = await _userManager.GetUserAsync(User);
+
+                        var comment = new Comment { IssueId = issue.Id, UserId = user.Id, Text = issue.CommentText };
+                        _context.Comments.Add(comment);
+                        _context.SaveChanges();
+                    }
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

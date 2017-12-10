@@ -18,14 +18,9 @@ namespace Portal.Models
         public int IssueId { get; set; }
         public bool IsAuthor { get; set; }
         public VoteType Vote { get; set; }
-        public virtual List<Comment> Comments { get; set; }
         public virtual User User { get; set; }
         public virtual Issue Issue { get; set; }
-
-        public User_Issue()
-        {
-            Comments = new List<Comment>();
-        }
+        
 
     }
 }

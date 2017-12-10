@@ -41,7 +41,7 @@ namespace Portal.Models
         public bool IsAdmin { get; set; }
         public virtual List<User_Issue> User_Issues { get; set; }
         public virtual List<Image> Images { get; set; }
-        //public byte[] ProfilePicture { get; set; }
+        public virtual List<Comment> Comments { get; set; }
         public User()
         {
             User_Issues = new List<User_Issue>();
