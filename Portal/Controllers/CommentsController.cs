@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Portal.Data;
 using Portal.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Portal.Controllers
 {
@@ -22,13 +23,13 @@ namespace Portal.Controllers
             _context = context;
             _userManager = userManager;
         }
-
+        [Authorize]
         // GET: Comments
         public async Task<IActionResult> Index(int issueId)
         {
             return View(await _context.Comments.Where(c=>c.IssueId == issueId).ToListAsync());
         }
-
+        [Authorize]
         // GET: Comments/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -46,7 +47,7 @@ namespace Portal.Controllers
 
             return View(comment);
         }
-
+        [Authorize]
         // GET: Comments/Create
         public async Task<IActionResult> Create(int issueId)
         {
@@ -58,6 +59,7 @@ namespace Portal.Controllers
         // POST: Comments/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Text,UserId,IssueId")] Comment comment)
@@ -70,7 +72,7 @@ namespace Portal.Controllers
             }
             return View(comment);
         }
-
+        [Authorize]
         // GET: Comments/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -86,7 +88,7 @@ namespace Portal.Controllers
             }
             return View(comment);
         }
-
+        [Authorize]
         // POST: Comments/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -121,7 +123,7 @@ namespace Portal.Controllers
             }
             return View(comment);
         }
-
+        [Authorize]
         // GET: Comments/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -139,7 +141,7 @@ namespace Portal.Controllers
 
             return View(comment);
         }
-
+        [Authorize]
         // POST: Comments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

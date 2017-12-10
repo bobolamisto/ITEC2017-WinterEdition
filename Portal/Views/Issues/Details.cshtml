@@ -24,10 +24,10 @@
         @if (Model.Images.Count > 0)
             {
             <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                @for (int i = 1; i < Model.Images.Count; i++)
+            @for (int i = 1; i < Model.Images.Count; i++)
                 {
-                    <li data-target="#myCarousel" data-slide-to="@i"></li>
-                }
+                <li data-target="#myCarousel" data-slide-to="@i"></li>
+            }
         }
     </ol>
 
@@ -40,14 +40,14 @@
                 <div class="carousel-caption">
                 </div>
             </div>
-                @for (int i = 1; i < Model.Images.Count; i++)
+            @for (int i = 1; i < Model.Images.Count; i++)
                 {
-                    <div class="item">
-                        <img src="/Images/ViewImage/@Model.Images[i].Id" style="width:100%;">
-                        <div class="carousel-caption">
-                        </div>
+                <div class="item">
+                    <img src="/Images/ViewImage/@Model.Images[i].Id" style="width:100%;">
+                    <div class="carousel-caption">
                     </div>
-                }
+                </div>
+            }
 
         }
         <!-- Left and right controls -->
@@ -60,6 +60,21 @@
             <span class="sr-only">Next</span>
         </a>
     </div>
+    <table class="table">
+        <td style="border : 0px"></td>
+        <tr>
+            <a asp-action="UpVote" asp-route-id="@Model.Id">
+                <img src="~/images/like.png" style="height : 60px; width: 75px" />
+            </a>
+        </tr>
+        <tr>
+            <a asp-action="DownVote" asp-route-id="@Model.Id">
+                <img src="~/images/dislike.png" style="height: 50px; width: 75px" />
+            </a>
+        </tr>
+        </td>
+    </table>
+
 </div>
 <form asp-action="Edit">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -98,34 +113,34 @@
     </div>
 </form>
 @*<div >
-    <form asp-action="#" id="issue-details-comments-form">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group" hidden>
-            <label name="UserId" class="control-label"></label>
-            <input name="UserId" class="form-control" />
-        </div>
-        <div class="form-group" hidden>
-            <label name="IssueId" class="control-label"></label>
-            <input name="IssueId" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label name="Text" class="control-label"></label>
-            <input name="Text" class="form-control" />
-        </div>
-        <div class="form-group">
-            <input type="submit" value="Add Comment" class="btn btn-default" />
-        </div>
-    </form>
-    
-</div>*@
+        <form asp-action="#" id="issue-details-comments-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group" hidden>
+                <label name="UserId" class="control-label"></label>
+                <input name="UserId" class="form-control" />
+            </div>
+            <div class="form-group" hidden>
+                <label name="IssueId" class="control-label"></label>
+                <input name="IssueId" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label name="Text" class="control-label"></label>
+                <input name="Text" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Add Comment" class="btn btn-default" />
+            </div>
+        </form>
 
-@section Scripts{ 
+    </div>*@
+
+@section Scripts{
     @*<script type="text/javascript">
-        $(document).ready(function () {
-            $("#issue-details-comments-form").onsubmit(function (event) {
-                event.preventDefault();
+            $(document).ready(function () {
+                $("#issue-details-comments-form").onsubmit(function (event) {
+                    event.preventDefault();
+                });
+                $("#issue-details-comments-form").attr("submit", "/Comments/Create/" + @Model.Id);
             });
-            $("#issue-details-comments-form").attr("submit", "/Comments/Create/" + @Model.Id);
-        });
-    </script>*@
+        </script>*@
 }

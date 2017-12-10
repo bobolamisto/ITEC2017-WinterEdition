@@ -7,7 +7,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                Archived Issues
             </th>
             <th hidden>
                 @Html.DisplayNameFor(model => model.Description)
@@ -17,7 +17,7 @@
             </th>
             <th></th>
         </tr>
-    </thead>
+    </thead>    
     <tbody>
         @foreach (var item in Model)
         {
@@ -30,9 +30,6 @@
                 </td>
                 <td hidden>
                     @Html.DisplayFor(modelItem => item.Location.Id)
-                </td>
-                <td>
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
             </tr>
         }

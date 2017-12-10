@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Portal.Data;
 using Portal.Models;
 using Portal.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Portal.Controllers
 {
@@ -20,48 +21,81 @@ namespace Portal.Controllers
             _context = context;
             _emailSender = new EmailService();
         }
-
+        [Authorize]
         // GET: Users
         public async Task<IActionResult> Index()
         {
             var portalDbContext = _context.User.Include(u => u.Location);
             return View(await portalDbContext.ToListAsync());
         }
-
+        [Authorize]
         public async Task<IActionResult> IndexAdmin()
         {
             var portalDbContext = _context.User.Include(u => u.Location);
             return View(await portalDbContext.ToListAsync());
         }
-
+        [Authorize]
         public async Task<IActionResult> Statistics()
         {
             return View();
         }
 
 
-
+        [Authorize]
         public async Task<IActionResult> ArchiveIssueAsync(int id)
         {
-            var issues = _context.Issues.Include(i => i.Location)
+            var issue = _context.Issues.Include(i => i.Location)
                 .Include(i => i.States)
+                .Include(i => i.User_Issues)
+                .Include(i => i.Comments)
                 .FirstOrDefault(i => i.Id == id);
-            issues.States.Add(new IssueState { IssueId = issues.Id, Date = System.DateTime.Now, Type = StateType.Archived });
-            _context.Update(issues);
+            List<User> listOfReceivers = new List<User>();
+
+            foreach(var comment in issue.Comments)
+            {
+                listOfReceivers.Add(_context.User.Find(comment.UserId));
+            }
+            await _context.Users.Where(u => u.IsAdmin == true).ForEachAsync(u => listOfReceivers.Add(u));
+            var author = issue.User_Issues.FirstOrDefault(ui => ui.IsAuthor == true && ui.IssueId == issue.Id);
+            listOfReceivers.Add(_context.Users.Find(author.UserId));
+
+            foreach(var u in listOfReceivers)
+            {
+                _emailSender.SendEmail(u.Email, "Archived Issue", "Issue " + issue.Title + " was moved to Achived!");
+            }
+            issue.States.Add(new IssueState { IssueId = issue.Id, Date = System.DateTime.Now, Type = StateType.Archived });
+            _context.Update(issue);
             await _context.SaveChangesAsync();
             return RedirectToAction("ActiveIssue");
         }
-
+        [Authorize]
         public async Task<IActionResult> SolveIssueAsync(int id)
         {
-            var issues = _context.Issues.Include(i => i.Location)
+            var issue = _context.Issues.Include(i => i.Location)
                 .Include(i => i.States)
+                .Include(i => i.User_Issues)
+                .Include(i => i.Comments)
                 .FirstOrDefault(i => i.Id == id);
-            issues.States.Add(new IssueState { IssueId = issues.Id, Date = System.DateTime.Now, Type = StateType.Solved });
-            _context.Update(issues);
+            List<User> listOfReceivers = new List<User>();
+
+            foreach (var comment in issue.Comments)
+            {
+                listOfReceivers.Add(_context.User.Find(comment.UserId));
+            }
+            await _context.Users.Where(u => u.IsAdmin == true).ForEachAsync(u => listOfReceivers.Add(u));
+            var author = issue.User_Issues.FirstOrDefault(ui => ui.IsAuthor == true && ui.IssueId == issue.Id);
+            listOfReceivers.Add(_context.Users.Find(author.UserId));
+
+            foreach (var u in listOfReceivers)
+            {
+                _emailSender.SendEmail(u.Email, "Archived Issue", "Issue " + issue.Title + " was moved to Solved!");
+            }
+            issue.States.Add(new IssueState { IssueId = issue.Id, Date = System.DateTime.Now, Type = StateType.Solved });
+            _context.Update(issue);
             await _context.SaveChangesAsync();
             return RedirectToAction("ActiveIssue");
         }
+        [Authorize]
         public IActionResult ActiveIssue()
         {
             var issues = _context.Issues.Include(i => i.Location)
@@ -84,7 +118,7 @@ namespace Portal.Controllers
             }
             return View(list);
         }
-
+        [Authorize]
         public IActionResult ArchivedIssue()
         {
             var issues = _context.Issues.Include(i => i.Location)
@@ -107,7 +141,7 @@ namespace Portal.Controllers
             }
             return View(list);
         }
-
+        [Authorize]
         public IActionResult SolvedIssue()
         {
             var issues = _context.Issues.Include(i => i.Location)
@@ -130,7 +164,7 @@ namespace Portal.Controllers
             }
             return View(list);
         }
-
+        [Authorize]
         // GET: Users/Details/5
         public async Task<IActionResult> Details(string id)
         {
@@ -173,7 +207,7 @@ namespace Portal.Controllers
             ViewData["LocationId"] = new SelectList(_context.Locations, "Id", "Id", user.LocationId);
             return View(user);
         }
-
+        [Authorize]
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
@@ -194,6 +228,7 @@ namespace Portal.Controllers
         // POST: Users/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("FirstName,LastName,LocationId,RadiusOfInterest,Age,Gender,Status,IsAdmin,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user)
@@ -210,7 +245,7 @@ namespace Portal.Controllers
                     }
                     else if(user.Status == UserStatus.Rejected)
                     {
-                        _emailSender.SendEmail(user.Email, "Account rejected", "Your account was rejected by an admin");
+                        _emailSender.SendEmail(user.Email, "Account rejected", "Your account was accepted by an admin");
 
                     }
                 }
@@ -230,7 +265,7 @@ namespace Portal.Controllers
             ViewData["LocationId"] = new SelectList(_context.Locations, "Id", "Id", user.LocationId);
             return View(user);
         }
-
+        [Authorize]
         // GET: Users/Delete/5
         public async Task<IActionResult> Delete(string id)
         {

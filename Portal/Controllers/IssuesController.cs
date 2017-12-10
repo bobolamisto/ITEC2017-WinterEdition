@@ -11,6 +11,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Portal.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Portal.Controllers
 {
@@ -27,6 +28,7 @@ namespace Portal.Controllers
         }
 
         // GET: Issues
+        [Authorize]
         public async Task<IActionResult> Index()
         {
 
@@ -50,16 +52,6 @@ namespace Portal.Controllers
                 }
                 if (lastState.Type == StateType.Active)
                 {
-                    //list.Add(new IssueViewModel
-                    //{
-                    //    Id = issue.Id,
-                    //    Description = issue.Description,
-                    //    Images = issue.Images,
-                    //    LocationId = issue.LocationId,
-                    //    Location = issue.Location,
-                    //    Title = issue.Title,
-                    //    LoggedUser = user
-                    //});
                     issue.States = null;
                     issue.Images = null;
                     issue.User_Issues = null;
@@ -68,7 +60,7 @@ namespace Portal.Controllers
             }
             return View(list);
         }
-
+        [Authorize]
         public async Task<IActionResult> MyIssues()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -96,7 +88,7 @@ namespace Portal.Controllers
             }
             return View(list);
         }
-
+        [Authorize]
         // GET: Issues/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -116,7 +108,7 @@ namespace Portal.Controllers
 
             return PartialView(issue);
         }
-
+        [Authorize]
         // GET: Issues/Create
         public IActionResult Create()
         {
@@ -171,7 +163,7 @@ namespace Portal.Controllers
             }
             return View(issue);
         }
-
+        [Authorize]
         // GET: Issues/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -240,6 +232,7 @@ namespace Portal.Controllers
             ViewData["LocationId"] = new SelectList(_context.Locations, "Id", "Id", issue.LocationId);
             return View(issue);
         }
+        [Authorize]
         public async Task<IActionResult> UpVote(int id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -251,7 +244,7 @@ namespace Portal.Controllers
             }
             return RedirectToAction("Index");
         }
-
+        [Authorize]
         public async Task<IActionResult> DownVote(int id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -273,7 +266,7 @@ namespace Portal.Controllers
 
             return RedirectToAction("Index");
         }
-
+        [Authorize]
         public async Task<IActionResult> ArchiveIssueAsync(int id)
         {
             var issues = _context.Issues.Include(i => i.Location)
@@ -285,6 +278,7 @@ namespace Portal.Controllers
             return RedirectToAction("Index");
         }
         // GET: Issues/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -302,7 +296,7 @@ namespace Portal.Controllers
 
             return View(issue);
         }
-
+        [Authorize]
         // POST: Issues/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
