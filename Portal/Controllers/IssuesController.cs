@@ -108,12 +108,16 @@ namespace Portal.Controllers
             var issue = await _context.Issues
                 .Include(i => i.Location)
                 .Include(i => i.Images)
+                .Include(i=>i.Comments)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (issue == null)
             {
                 return NotFound();
             }
-
+            foreach (var comm in issue.Comments)
+            {
+                comm.UserName = _context.Users.Find(comm.UserId).FullName;
+            }
             return PartialView(issue);
         }
 
@@ -180,12 +184,16 @@ namespace Portal.Controllers
                 return NotFound();
             }
 
-            var issue = await _context.Issues.SingleOrDefaultAsync(m => m.Id == id);
+            var issue = await _context.Issues.Include(i=>i.Comments).SingleOrDefaultAsync(m => m.Id == id);
+            
             if (issue == null)
             {
                 return NotFound();
             }
-            ViewData["LocationId"] = new SelectList(_context.Locations, "Id", "Id", issue.LocationId);
+            foreach (var comm in issue.Comments)
+            {
+                comm.UserName = _context.Users.Find(comm.UserId).FullName;
+            }
             return View(issue);
         }
 
