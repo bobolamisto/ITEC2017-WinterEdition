@@ -10,9 +10,9 @@
             @if (UserManager.GetUserAsync(User).Result.IsAdmin) { 
                 <li><a asp-area="" asp-controller="Users" asp-action="Index">Admin panel</a></li>
             }
-            <li><a asp-area="" asp-controller="Issues" asp-action="Index">Issues</a></li>
+            @*<li><a asp-area="" asp-controller="Issues" asp-action="Index">Issues</a></li>*@
             <li><a asp-area="" asp-controller="Issues" asp-action="MyIssues">My Issues</a></li>
-            <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+            @*<li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>*@
         </ul>
 
         <ul class="nav navbar-nav navbar-right">

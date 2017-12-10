@@ -11,6 +11,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Portal.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Portal.Controllers
 {
@@ -27,6 +28,7 @@ namespace Portal.Controllers
         }
 
         // GET: Issues
+        [Authorize]
         public async Task<IActionResult> Index()
         {
 
@@ -221,6 +223,7 @@ namespace Portal.Controllers
                     }
                     issue.LocationId = _context.Locations.FirstOrDefault(l => l.Latitude == issue.Location.Latitude && l.Longitude == issue.Location.Longitude).Id;
                     _context.Update(issue);
+                    await _context.SaveChangesAsync();
 
                     if (!String.IsNullOrEmpty(issue.CommentText))
                     {
@@ -229,8 +232,9 @@ namespace Portal.Controllers
                         var comment = new Comment { IssueId = issue.Id, UserId = user.Id, Text = issue.CommentText };
                         _context.Comments.Add(comment);
                         _context.SaveChanges();
+                        return View(issue);
+
                     }
-                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
