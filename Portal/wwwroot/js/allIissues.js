@@ -44,7 +44,6 @@ function initMap() {
             var div = $("#issue-marker-details");
             div.empty();
             div.load("/Issues/Details/" + this.issueID);
-
         });
     }
 
