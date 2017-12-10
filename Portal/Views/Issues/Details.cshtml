@@ -24,10 +24,10 @@
         @if (Model.Images.Count > 0)
             {
             <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                @for (int i = 1; i < Model.Images.Count; i++)
+            @for (int i = 1; i < Model.Images.Count; i++)
                 {
-                    <li data-target="#myCarousel" data-slide-to="@i"></li>
-                }
+                <li data-target="#myCarousel" data-slide-to="@i"></li>
+            }
         }
     </ol>
 
@@ -40,14 +40,14 @@
                 <div class="carousel-caption">
                 </div>
             </div>
-                @for (int i = 1; i < Model.Images.Count; i++)
+            @for (int i = 1; i < Model.Images.Count; i++)
                 {
-                    <div class="item">
-                        <img src="/Images/ViewImage/@Model.Images[i].Id" style="width:100%;">
-                        <div class="carousel-caption">
-                        </div>
+                <div class="item">
+                    <img src="/Images/ViewImage/@Model.Images[i].Id" style="width:100%;">
+                    <div class="carousel-caption">
                     </div>
-                }
+                </div>
+            }
 
         }
         <!-- Left and right controls -->
@@ -97,35 +97,14 @@
         <input type="submit" value="Save" class="btn btn-default" />
     </div>
 </form>
-@*<div >
-    <form asp-action="#" id="issue-details-comments-form">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group" hidden>
-            <label name="UserId" class="control-label"></label>
-            <input name="UserId" class="form-control" />
-        </div>
-        <div class="form-group" hidden>
-            <label name="IssueId" class="control-label"></label>
-            <input name="IssueId" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label name="Text" class="control-label"></label>
-            <input name="Text" class="form-control" />
-        </div>
-        <div class="form-group">
-            <input type="submit" value="Add Comment" class="btn btn-default" />
-        </div>
-    </form>
-    
-</div>*@
+<div id="issue-details-comments-list">
+    @for(int i = Model.Comments.Count-1; i>=0;i--)
+    {
+        <label>@Model.Comments[i].UserName: </label>
+        @Model.Comments[i].Text<br />
+    }
+</div>
 
-@section Scripts{ 
-    @*<script type="text/javascript">
-        $(document).ready(function () {
-            $("#issue-details-comments-form").onsubmit(function (event) {
-                event.preventDefault();
-            });
-            $("#issue-details-comments-form").attr("submit", "/Comments/Create/" + @Model.Id);
-        });
-    </script>*@
+@section Scripts{
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }
